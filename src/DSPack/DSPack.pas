@@ -47,7 +47,7 @@ interface
 
 uses
   Windows, Classes, SysUtils, Messages, Graphics, Forms, Controls, ActiveX, {$IFDEF FPC}LCLIntf,{$ENDIF}
-  ComCtrls, MMSystem, Math, {$IFDEF FPC}RTL{$ENDIF}Consts, ExtCtrls,
+  ComCtrls, MMSystem, Math, {$IFDEF FPC}RTLConsts{$ELSE}Consts{$ENDIF}, ExtCtrls,
   MultiMon, Dialogs, Registry, SyncObjs,
   DirectShow9, DirectDraw,Direct3D9,WMF9,
   DXSUtil;
