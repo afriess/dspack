@@ -1380,3 +1380,8 @@
 {.$UNDEF SUPPORTS_WEAKPACKAGEUNIT}
 
 {$ENDIF ~JEDI_INC}
+
+//===========================================
+
+{$DEFINE PUREPASCAL}
+

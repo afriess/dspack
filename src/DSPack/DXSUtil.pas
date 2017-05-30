@@ -41,7 +41,8 @@ interface
 
 uses
   {$IFDEF COMPILER6_UP} Variants, {$ENDIF}
-  Windows, SysUtils, ActiveX, Classes, MMSystem, DirectShow9, WMF9, DirectDraw,
+  Windows, SysUtils, ActiveX, Classes, MMSystem,
+  DirectShow9, WMF9, DirectDraw,
   DxDiag;
 
 // martin begin - added missing FPC activex declarations
@@ -118,11 +119,13 @@ type
     function GetPages(out pages: TCAGUID): HResult; stdcall;
   end;
 
-  {$EXTERNALSYM OleCreatePropertyFrame}
+ // use OleCreatePropertyFrame from OleAut32.dll (win32/64) not Olepro32.dll (win32)
+ 
+  {$EXTERNALSYM OleCreatePropertyFrame} 
   function OleCreatePropertyFrame(hwndOwner: HWnd; x, y: Integer;
     lpszCaption: POleStr; cObjects: Integer; pObjects: Pointer;
     cPages: Integer; pPageCLSIDs: Pointer; lcid: TLCID; dwReserved: Longint;
-    pvReserved: Pointer): HResult; stdcall; external 'olepro32.dll' name
+    pvReserved: Pointer): HResult; stdcall; external 'OleAut32.dll' name
     'OleCreatePropertyFrame';
   {$EXTERNALSYM VariantInit}
   procedure VariantInit(var varg: OleVariant); stdcall; external
@@ -910,7 +913,7 @@ type
     destructor Destroy; override;
     class function CreateBuffer(MaxLen: DWORD; const IID: TGUID; out Obj): HRESULT;
     // IUnknown
-    function QueryInterface(const IID: TGUID; out Obj): HResult; stdcall;
+    function QueryInterface( {$IFDEF FPC} constref {$ELSE} const {$ENDIF}IID: TGUID; out Obj): HResult; stdcall;
     function _AddRef: Integer; stdcall;
     function _Release: Integer; stdcall;
     // IMediaBuffer methods
@@ -1018,12 +1021,14 @@ var
   procedure Set8087CW(NewCW: Word);
   begin
     Default8087CW := NewCW;
+    {$ifdef CPUi386} // 
     asm
       FNCLEX
       FLDCW Default8087CW
     end;
+    {$endif}
   end;
-
+  
 // martin begin - asm ref 15,32 bit is not supported with 64bit fpc compiler
 {$IFNDEF FPC}
   function Get8087CW: Word;
@@ -4203,7 +4208,7 @@ begin
   end;
 end;
 
-function TMediaBuffer.QueryInterface(const IID: TGUID; out Obj): HResult; stdcall;
+function TMediaBuffer.QueryInterface( {$IFDEF FPC} constref {$ELSE} const {$ENDIF}IID: TGUID; out Obj): HResult; stdcall;
 begin
   if not Assigned(@Obj) then
   begin

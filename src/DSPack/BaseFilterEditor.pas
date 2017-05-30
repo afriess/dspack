@@ -31,12 +31,16 @@
 
 unit BaseFilterEditor;
 
+{$IFDEF FPC}
+  {$MODE Delphi}
+{$ENDIF}
+
 interface
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  Dialogs, StdCtrls, DXSUTIL, DirectShow9, ComCtrls, DSPack, Menus, ExtCtrls,
-  Buttons;
+  {$IFDEF FPC} LCLIntf,{$ELSE} Windows, Messages, {$ENDIF}SysUtils, Classes, Graphics, Controls, Forms,
+  Dialogs, StdCtrls, DXSUtil, DirectShow9, ComCtrls, DSPack, Menus, ExtCtrls,
+  Buttons{$IFDEF FPC}, LCLType{$ENDIF};
 
 type
   TFormBaseFilter = class(TForm)
@@ -537,11 +541,15 @@ const
 var
   FormBaseFilter: TFormBaseFilter;
 
-
 implementation
+
 uses Activex, ComObj;
 
-{$R *.dfm}
+{$IFDEF FPC}
+  {$R *.lfm}
+{$ELSE}
+  {$R *.dfm}
+{$ENDIF}
 {$R BaseFilterEditor.res}
 
   constructor TFormBaseFilter.Create(AOwner: TComponent);
@@ -551,16 +559,16 @@ uses Activex, ComObj;
     PinList:= TPinList.Create;
     InPinPic := TBitmap.Create;
     OutPinPic := TBitmap.Create;
-    InPinPic.LoadFromResourceName(hinstance, 'INPUT');
-    OutPinPic.LoadFromResourceName(hinstance, 'OUTPUT');
-    InfoBtn.Glyph.LoadFromResourceName(hinstance, 'INFO');
-    Image1.Picture.Bitmap.LoadFromResourceName(hinstance, 'GREEN_MARK');
-    Image2.Picture.Bitmap.LoadFromResourceName(hinstance, 'RED_MARK');
-    Image3.Picture.Bitmap.LoadFromResourceName(hinstance, 'BLUE_MARK');
-    Image4.Picture.Bitmap.LoadFromResourceName(hinstance, 'PURPLE_MARK');
-    Image5.Picture.Bitmap.LoadFromResourceName(hinstance, 'BLACK_MARK');
-    Image6.Picture.Bitmap.LoadFromResourceName(hinstance, 'INPUT');
-    Image7.Picture.Bitmap.LoadFromResourceName(hinstance, 'OUTPUT');
+    InPinPic.LoadFromResourceName(hinstance, 'DSP_INPUT');
+    OutPinPic.LoadFromResourceName(hinstance, 'DSP_OUTPUT');
+    InfoBtn.Glyph.LoadFromResourceName(hinstance, 'DSP_INFO');
+    Image1.Picture.Bitmap.LoadFromResourceName(hinstance, 'DSP_GREEN_MARK');
+    Image2.Picture.Bitmap.LoadFromResourceName(hinstance, 'DSP_RED_MARK');
+    Image3.Picture.Bitmap.LoadFromResourceName(hinstance, 'DSP_BLUE_MARK');
+    Image4.Picture.Bitmap.LoadFromResourceName(hinstance, 'DSP_PURPLE_MARK');
+    Image5.Picture.Bitmap.LoadFromResourceName(hinstance, 'DSP_BLACK_MARK');
+    Image6.Picture.Bitmap.LoadFromResourceName(hinstance, 'DSP_INPUT');
+    Image7.Picture.Bitmap.LoadFromResourceName(hinstance, 'DSP_OUTPUT');
   end;
 
   destructor  TFormBaseFilter.Destroy;
@@ -578,7 +586,7 @@ var
   a, b : integer;
   AMoniker, MyMoniker: IMoniker;
   PropBag: IPropertyBag;
-  AVariant: OleVariant;
+  AVariant: {$IFDEF FPC} Variant {$ELSE} OleVariant {$ENDIF};
   CLSID: TGUID;
   Found: boolean;
   NodeItem : pNodeItem;
@@ -619,11 +627,11 @@ begin
           TmpItem := Filters.Items[a];
           for b := 0 to TmpItem.Count -1 do
           begin
-            NodeItem := pNodeItem(TmpItem.Item[b].data);
+            NodeItem := pNodeItem( {$IFDEF FPC} TmpItem.Items[b].data {$ELSE} TmpItem.Item[b].data {$ENDIF} );
             If NodeItem^.Index = J then
             begin
-              Filters.Selected := TmpItem.Item[b];
-              Filterschange(Self, TmpItem.Item[b]);
+              Filters.Selected := {$IFDEF FPC} TmpItem.Items[b].data {$ELSE} TmpItem.Item[b].data {$ENDIF} ;
+              Filterschange(Self, {$IFDEF FPC} TmpItem.Items[b].data {$ELSE} TmpItem.Item[b].data {$ENDIF} );
             end;
           end;
         end;
@@ -710,7 +718,11 @@ begin
   {$IFDEF VER130}
   Filters.AlphaSort;
   {$ELSE}
+  {$IFDEF FPC}
+  Filters.AlphaSort;
+  {$ELSE}
   Filters.AlphaSort(True);
+  {$ENDIF}
   {$ENDIF}
   Filters.Items.EndUpdate;
 end;
@@ -865,9 +877,9 @@ begin
 end;
 
 procedure TFormBaseFilter.PinsDrawItem(Control: TWinControl;
-  Index: Integer; Rect: TRect; State: TOwnerDrawState);
+  Index: Integer; Rect: TRect; State: {$IFDEF FPC}LCLType.{$ENDIF}TOwnerDrawState);
 var
-	Bitmap: TBitmap;      { temporary variable for the item’s bitmap }
+	Bitmap: TBitmap;      { temporary variable for the itemâ€™s bitmap }
 	Offset: Integer;      { text offset width }
 begin
   with (Control as TListBox).Canvas do  { draw on control canvas, not on the form }
@@ -883,7 +895,7 @@ begin
                 Bitmap, Bounds(0, 0, Bitmap.Width, Bitmap.Height), clOlive);  {render bitmap}
       Offset := Bitmap.width + 6;    { add four pixels between bitmap and text}
     end;
-    If odSelected	in State then
+    if (odSelected in State) then
       Brush.Color := clHighLight;
     TextOut(Rect.Left + Offset, Rect.Top, (Control as TListBox).Items[Index]);  { display the text }
     If odFocused in state then

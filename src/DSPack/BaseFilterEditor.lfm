@@ -1,0 +1,475 @@
+object FormBaseFilter: TFormBaseFilter
+  Left = 504
+  Height = 326
+  Top = 199
+  Width = 411
+  ActiveControl = btOK
+  BorderStyle = bsSizeToolWin
+  Caption = 'Base Filter Editor'
+  ClientHeight = 326
+  ClientWidth = 411
+  Color = clBtnFace
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'MS Sans Serif'
+  OnCloseQuery = FormCloseQuery
+  OnShow = FormShow
+  Position = poScreenCenter
+  Visible = False
+  object InfoBtn: TSpeedButton
+    Cursor = crHandPoint
+    Left = 9
+    Height = 24
+    Hint = 'Show Base Filter Editor info'
+    Top = 295
+    Width = 24
+    Anchors = [akRight, akBottom]
+    Flat = True
+    OnClick = InfoBtnClick
+    ShowHint = True
+    ParentShowHint = False
+  end
+  object btOK: TButton
+    Left = 234
+    Height = 25
+    Top = 295
+    Width = 75
+    Anchors = [akRight, akBottom]
+    Caption = '&OK'
+    ModalResult = 1
+    TabOrder = 0
+  end
+  object btCancel: TButton
+    Left = 322
+    Height = 25
+    Top = 295
+    Width = 75
+    Anchors = [akRight, akBottom]
+    Caption = '&Cancel'
+    ModalResult = 2
+    TabOrder = 1
+  end
+  object PageControl1: TPageControl
+    Left = 0
+    Height = 292
+    Top = 0
+    Width = 411
+    ActivePage = SelectorSheet
+    Align = alTop
+    Anchors = [akTop, akLeft, akRight, akBottom]
+    TabIndex = 0
+    TabOrder = 2
+    object SelectorSheet: TTabSheet
+      Caption = 'Selector'
+      ClientHeight = 266
+      ClientWidth = 403
+      object Label1: TLabel
+        Left = 8
+        Height = 13
+        Top = 2
+        Width = 30
+        Caption = 'Filters:'
+        ParentColor = False
+      end
+      object Label2: TLabel
+        Left = 248
+        Height = 13
+        Top = 0
+        Width = 96
+        Anchors = [akTop, akRight]
+        Caption = 'Available Interfaces:'
+        ParentColor = False
+      end
+      object Label6: TLabel
+        Left = 248
+        Height = 13
+        Top = 124
+        Width = 23
+        Anchors = [akRight, akBottom]
+        Caption = 'Pins:'
+        ParentColor = False
+      end
+      object Filters: TTreeView
+        Left = 0
+        Height = 162
+        Top = 17
+        Width = 244
+        Anchors = [akTop, akLeft, akRight, akBottom]
+        DefaultItemHeight = 16
+        HideSelection = False
+        HotTrack = True
+        Indent = 19
+        ParentShowHint = False
+        PopupMenu = PopupMenu
+        ReadOnly = True
+        ShowHint = True
+        TabOrder = 0
+        OnChange = FiltersChange
+        OnCustomDrawItem = FiltersCustomDrawItem
+        OnDblClick = FiltersDblClick
+        Options = [tvoAutoItemHeight, tvoHotTrack, tvoKeepCollapsedNodes, tvoReadOnly, tvoShowButtons, tvoShowLines, tvoShowRoot, tvoToolTips, tvoThemedDraw]
+      end
+      object Interfaces: TListBox
+        Left = 249
+        Height = 104
+        Top = 16
+        Width = 145
+        Anchors = [akTop, akRight, akBottom]
+        ItemHeight = 0
+        OnDblClick = InterfacesDblClick
+        Options = [lboDrawFocusRect]
+        Sorted = True
+        TabOrder = 1
+      end
+      object Pins: TListBox
+        Left = 249
+        Height = 98
+        Top = 139
+        Width = 145
+        Anchors = [akRight, akBottom]
+        ItemHeight = 14
+        OnDrawItem = PinsDrawItem
+        OnMeasureItem = PinsMeasureItem
+        Options = [lboDrawFocusRect]
+        PopupMenu = PinMenu
+        Style = lbOwnerDrawVariable
+        TabOrder = 2
+      end
+      object MonikerTag: TMemo
+        Left = 0
+        Height = 50
+        Hint = 'Filter Moniker.'
+        Top = 186
+        Width = 244
+        Anchors = [akLeft, akRight, akBottom]
+        Color = clBtnFace
+        ParentShowHint = False
+        ReadOnly = True
+        ShowHint = True
+        TabOrder = 3
+        TabStop = False
+      end
+    end
+    object PinsSheet: TTabSheet
+      Caption = 'Pins Details'
+      ClientHeight = 266
+      ClientWidth = 403
+      ImageIndex = 1
+      OnShow = PinsSheetShow
+      object Label3: TLabel
+        Left = 1
+        Height = 13
+        Top = 0
+        Width = 23
+        Caption = 'Pins:'
+        ParentColor = False
+      end
+      object Label4: TLabel
+        Left = 153
+        Height = 13
+        Top = 0
+        Width = 50
+        Anchors = [akTop, akRight]
+        Caption = 'Interfaces:'
+        ParentColor = False
+      end
+      object Label5: TLabel
+        Left = 1
+        Height = 13
+        Top = 123
+        Width = 61
+        Anchors = [akLeft, akBottom]
+        Caption = 'MediaTypes:'
+        ParentColor = False
+      end
+      object Pins1: TListBox
+        Left = 1
+        Height = 103
+        Top = 16
+        Width = 145
+        Anchors = [akTop, akLeft, akRight, akBottom]
+        ItemHeight = 13
+        OnClick = Pins1Click
+        OnDrawItem = PinsDrawItem
+        OnMeasureItem = PinsMeasureItem
+        Options = [lboDrawFocusRect]
+        PopupMenu = PinMenu
+        Style = lbOwnerDrawVariable
+        TabOrder = 0
+      end
+      object PinInterfaces: TListBox
+        Left = 153
+        Height = 103
+        Top = 16
+        Width = 241
+        Anchors = [akTop, akRight, akBottom]
+        ItemHeight = 0
+        OnDblClick = PinInterfacesDblClick
+        Options = [lboDrawFocusRect]
+        TabOrder = 1
+      end
+      object MediaTypes: TListBox
+        Left = 1
+        Height = 97
+        Top = 139
+        Width = 392
+        Anchors = [akLeft, akRight, akBottom]
+        ItemHeight = 0
+        Options = [lboDrawFocusRect]
+        TabOrder = 2
+      end
+    end
+    object InfoSheet: TTabSheet
+      Caption = 'Info'
+      ClientHeight = 266
+      ClientWidth = 403
+      ImageIndex = 2
+      TabVisible = False
+      object Panel1: TPanel
+        Left = 0
+        Height = 49
+        Top = 0
+        Width = 403
+        Align = alTop
+        BevelOuter = bvNone
+        BorderWidth = 5
+        ClientHeight = 49
+        ClientWidth = 403
+        Color = clHighlight
+        ParentColor = False
+        TabOrder = 0
+        object Label16: TLabel
+          Left = 5
+          Height = 22
+          Top = 5
+          Width = 393
+          Align = alTop
+          Alignment = taCenter
+          Caption = 'Base Filter Editor'
+          Font.CharSet = ANSI_CHARSET
+          Font.Color = clWhite
+          Font.Height = -19
+          Font.Name = 'Arial'
+          ParentColor = False
+          ParentFont = False
+        end
+        object Label17: TLabel
+          Left = 5
+          Height = 13
+          Top = 27
+          Width = 393
+          Align = alTop
+          Alignment = taCenter
+          Caption = 'Version 1.2'
+          Font.Color = clWhite
+          Font.Height = -11
+          Font.Name = 'MS Sans Serif'
+          ParentColor = False
+          ParentFont = False
+        end
+      end
+      object Panel2: TPanel
+        Left = 0
+        Height = 217
+        Top = 49
+        Width = 403
+        Align = alClient
+        BevelOuter = bvNone
+        BorderWidth = 2
+        ClientHeight = 217
+        ClientWidth = 403
+        Color = clWindow
+        ParentColor = False
+        TabOrder = 1
+        object Label7: TLabel
+          Left = 0
+          Height = 13
+          Top = 0
+          Width = 57
+          Caption = 'Filter Colors:'
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'MS Sans Serif'
+          Font.Style = [fsUnderline]
+          ParentColor = False
+          ParentFont = False
+        end
+        object Label8: TLabel
+          Left = 44
+          Height = 13
+          Top = 17
+          Width = 135
+          Caption = 'DirectX Media Object (DMO)'
+          ParentColor = False
+        end
+        object Label9: TLabel
+          Left = 44
+          Height = 13
+          Top = 35
+          Width = 159
+          Caption = 'Users Kernel Streaming (KSProxy)'
+          ParentColor = False
+        end
+        object Label10: TLabel
+          Left = 44
+          Height = 13
+          Top = 53
+          Width = 188
+          Caption = 'Uses Compression Manager (ACM/ICM)'
+          ParentColor = False
+        end
+        object Label11: TLabel
+          Left = 44
+          Height = 13
+          Top = 71
+          Width = 153
+          Caption = 'Plug and Play (PNP) device filter'
+          ParentColor = False
+        end
+        object Label12: TLabel
+          Left = 44
+          Height = 13
+          Top = 89
+          Width = 83
+          Caption = 'Default filter Color'
+          ParentColor = False
+        end
+        object Label13: TLabel
+          Left = 0
+          Height = 13
+          Top = 120
+          Width = 59
+          Caption = 'Pin Pictures:'
+          Font.Color = clWindowText
+          Font.Height = -11
+          Font.Name = 'MS Sans Serif'
+          Font.Style = [fsUnderline]
+          ParentColor = False
+          ParentFont = False
+        end
+        object Label14: TLabel
+          Left = 40
+          Height = 13
+          Top = 136
+          Width = 93
+          Caption = 'Indicate a input pin.'
+          ParentColor = False
+        end
+        object Label15: TLabel
+          Left = 40
+          Height = 13
+          Top = 154
+          Width = 100
+          Caption = 'Indicate a output pin.'
+          ParentColor = False
+        end
+        object Image1: TImage
+          Left = 8
+          Height = 16
+          Top = 16
+          Width = 30
+          AutoSize = True
+        end
+        object Image2: TImage
+          Left = 8
+          Height = 16
+          Top = 34
+          Width = 30
+          AutoSize = True
+        end
+        object Image3: TImage
+          Left = 8
+          Height = 16
+          Top = 52
+          Width = 30
+          AutoSize = True
+        end
+        object Image4: TImage
+          Left = 8
+          Height = 16
+          Top = 70
+          Width = 30
+          AutoSize = True
+        end
+        object Image5: TImage
+          Left = 8
+          Height = 16
+          Top = 88
+          Width = 30
+          AutoSize = True
+        end
+        object Image6: TImage
+          Left = 16
+          Height = 14
+          Top = 136
+          Width = 16
+          AutoSize = True
+          Transparent = True
+        end
+        object Image7: TImage
+          Left = 16
+          Height = 14
+          Top = 154
+          Width = 16
+          AutoSize = True
+          Transparent = True
+        end
+      end
+    end
+  end
+  object FilterGraph: TFilterGraph
+    AutoCreate = True
+    GraphEdit = False
+    LinearVolume = True
+  end
+  object Filter: TFilter
+    BaseFilter.data = {
+      00000000
+    }
+    FilterGraph = FilterGraph
+  end
+  object PopupMenu: TPopupMenu
+    OnPopup = PopupMenuPopup
+    Left = 344
+    Top = 256
+    object PropertyPage: TMenuItem
+      Caption = 'Property Page'
+      OnClick = PropertyPageClick
+    end
+    object VFWCapture: TMenuItem
+      Caption = 'VFW Capture'
+      object VFWFormat: TMenuItem
+        Caption = 'Format'
+        OnClick = VFWFormatClick
+      end
+      object VFWSource: TMenuItem
+        Caption = 'Source'
+        OnClick = VFWSourceClick
+      end
+      object VFWDisplay: TMenuItem
+        Caption = 'Display'
+        OnClick = VFWDisplayClick
+      end
+    end
+    object VFWConfig: TMenuItem
+      Caption = 'VFW Compress'
+      object Config1: TMenuItem
+        Caption = 'Config'
+        OnClick = Config1Click
+      end
+      object VFWAbout: TMenuItem
+        Caption = 'About'
+        OnClick = VFWAboutClick
+      end
+    end
+  end
+  object PinMenu: TPopupMenu
+    OnPopup = PinMenuPopup
+    Left = 376
+    Top = 256
+    object PinProperty: TMenuItem
+      Caption = 'Property Page'
+      OnClick = PinPropertyClick
+    end
+  end
+end

@@ -23,6 +23,10 @@
      
 unit MediaTypeEditor;
 
+{$IFDEF FPC}
+  {$MODE Delphi}
+{$ENDIF} 
+
 interface
 
 {$IFDEF VER150}
@@ -32,8 +36,8 @@ interface
 {$ENDIF}
 
 uses
-  Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms,
-  Dialogs, DXSUtil, StdCtrls, DirectShow9, Mask;
+  {$IFDEF FPC} LCLIntf, LCLType,{$ELSE}Windows, Messages, {$ENDIF} SysUtils, Classes, Graphics, Controls, Forms,
+  Dialogs, DXSUtil, StdCtrls {, Mask};
 
 type
   TFormMediaType = class(TForm)
@@ -203,9 +207,14 @@ const
     (name: 'WaveFormatEx'; GUID: '{05589F81-C356-11CE-BF01-00AA0055595A}'));
 
 implementation
- uses ActiveX;
-{$R *.dfm}
 
+ uses ActiveX;
+
+{$IFDEF FPC}
+{$R *.lfm}
+{$ELSE}
+{$R *.dfm}
+{$ENDIF} 
   constructor TFormMediaType.Create(AOwner: TComponent);
   var i: byte;
   begin

@@ -44,10 +44,13 @@
 unit DSPack;
 
 interface
+
 uses
-  Windows, Classes, SysUtils, Messages, Graphics, Forms, Controls, ActiveX, DirectShow9,
-  DirectDraw, DXSUtil, ComCtrls, MMSystem, Math, Consts, ExtCtrls,
-  MultiMon, Dialogs, Registry, SyncObjs, Direct3D9, WMF9;
+  Windows, Classes, SysUtils, Messages, Graphics, Forms, Controls, ActiveX, {$IFDEF FPC}LCLIntf,{$ENDIF}
+  ComCtrls, MMSystem, Math, {$IFDEF FPC}RTL{$ENDIF}Consts, ExtCtrls,
+  MultiMon, Dialogs, Registry, SyncObjs,
+  DirectShow9, DirectDraw,Direct3D9,WMF9,
+  DXSUtil;
 
 const
   { Filter Graph message identifier. }
@@ -138,7 +141,7 @@ type
   TOnGraphEndOfSegment         = procedure(sender: TObject; StreamTime: TReferenceTime; NumSegment: Cardinal) of object ;         {@exclude}
   TOnDSResult                  = procedure(sender: TObject; Result: HRESULT) of object ;                                           {@exclude}
   TOnGraphFullscreenLost       = procedure(sender: TObject; Renderer: IBaseFilter) of object ;                                     {@exclude}
-  TOnGraphOleEvent             = procedure(sender: TObject; String1, String2: UnicodeString) of object ;                              {@exclude}
+  TOnGraphOleEvent             = procedure(sender: TObject; String1, String2: UnicodeString) of object ;                           {@exclude}
   TOnGraphOpeningFile          = procedure(sender: TObject; opening: boolean) of object ;                                          {@exclude}
   TOnGraphSNDDevError          = procedure(sender: TObject; OccurWhen: TSndDevErr; ErrorCode: LongWord) of object ;               {@exclude}
   TOnGraphStreamControl        = procedure(sender: TObject; PinSender: IPin; Cookie: LongWord) of object ;                         {@exclude}
@@ -217,7 +220,17 @@ type
     procedure ControlEvent(Event: TControlEvent; Param: integer = 0);
   end;
 
+  {$IFDEF FPC}
+  { IObjectWithSite interface }
 
+  {$EXTERNALSYM IObjectWithSite}
+  IObjectWithSite = interface
+    ['{FC4801A3-2BA9-11CF-A229-00AA003D7352}']
+    function SetSite(const pUnkSite: IUnknown ):HResult; stdcall;
+    function GetSite(const riid: TIID; out site: IUnknown):HResult; stdcall;
+  end;
+
+  {$ENDIF}
 
 // *****************************************************************************
 //  TFilterGraph
@@ -384,6 +397,7 @@ type
     {@exclude}
     function QueryService(const rsid, iid: TGuid; out Obj): HResult; stdcall;
   public
+    Procedure AddFilter(AFilter: IBaseFilter; sName : UnicodeString);
     { Retrieve/Set the current Position in MilliSeconds. }
     property Position: Integer read GetPosition write SetPosition;
     { Retrieve the total duration of a stream. }
@@ -418,7 +432,7 @@ type
       <b>gmCapture: </b> all gmNormal interfaces and ICaptureGraphBuilder2.<br>
       <b>gmDVD: </b> all gmNormal interfaces and IDvdGraphBuilder, IDvdControl2,
                      IDvdInfo2, IAMLine21Decoder.}
-    function QueryInterface(const IID: TGUID; out Obj): HResult; override; stdcall;
+    function QueryInterface({$IFDEF FPC} constref {$ELSE} const {$ENDIF} IID: TGUID; out Obj): HResult; override; stdcall;
     { The Run method runs all the filters in the filter graph. While the graph
       is running, data moves through the graph and is rendered. }
     function Play: boolean;
@@ -831,7 +845,7 @@ type
       the DVD content. Playback is stopped. }
     property OnDVDErrorLowParentalLevel: TNotifyEvent read FOnDVDErrorLowParentalLevel write FOnDVDErrorLowParentalLevel;
 
-    { Macrovision® distribution failed. Playback stopped. }
+    { MacrovisionÂ® distribution failed. Playback stopped. }
     property OnDVDErrorMacrovisionFail: TNotifyEvent read FOnDVDErrorMacrovisionFail write FOnDVDErrorMacrovisionFail;
 
     { No discs can be played because the system region does not match the decoder region. }
@@ -967,7 +981,7 @@ type
     {@exclude}
     procedure Resize; override;
     {@exclude}
-    procedure ConstrainedResize(var MinWidth, MinHeight, MaxWidth, MaxHeight: Integer); override;
+    procedure ConstrainedResize(var MinWidth, MinHeight, MaxWidth, MaxHeight: {$IFDEF FPC} TConstraintSize {$ELSE} Integer {$ENDIF} ); override;
     {@exclude}
     function GetFilter: IBaseFilter;
     {@exclude}
@@ -982,7 +996,7 @@ type
     procedure Paint; override;
   public
     {@exclude}
-    function QueryInterface(const IID: TGUID; out Obj): HResult; override; stdcall;
+    function QueryInterface({$IFDEF FPC} constref {$ELSE} const {$ENDIF} IID: TGUID; out Obj): HResult; override; stdcall;
     { Constructor. }
     constructor Create(AOwner: TComponent);override;
     { Destructor. }
@@ -1024,7 +1038,7 @@ type
     property OnKeyDown;            {@exclude}
     property OnKeyPress;           {@exclude}
     property OnKeyUp;              {@exclude}
-    property OnCanResize;          {@exclude}
+  //  property OnCanResize;          {@exclude}
     property OnClick;              {@exclude}
     property OnConstrainedResize;  {@exclude}
     property OnDblClick;           {@exclude}
@@ -1086,7 +1100,7 @@ type
       The FilterGraph must be active. }
     procedure UpdateMediaType;
     {@exclude}
-    function QueryInterface(const IID: TGUID; out Obj): HResult; override; stdcall;
+    function QueryInterface({$IFDEF FPC} constref {$ELSE} const {$ENDIF} IID: TGUID; out Obj): HResult; override; stdcall;
     { Configure the MediaType according to the Source MediaType to be compatible with the BMP format.
       if Source = nil then this method use the default value to set the resolution: 1..32.
       The MediaType is auto configured to RGB24.}
@@ -1112,6 +1126,7 @@ type
 
   { This component is an easy way to add a specific filter to a filter graph.
     You can retrieve an interface using the <b>as</b> operator whith D6 :)}
+
   TFilter = class(TComponent, IFilter)
   private
     FFilterGraph : TFilterGraph;
@@ -1130,7 +1145,7 @@ type
     { Destructor method. }
     destructor Destroy; override;
     { Retrieve a filter interface. }
-    function QueryInterface(const IID: TGUID; out Obj): HResult; override; stdcall;
+    function QueryInterface({$IFDEF FPC} constref {$ELSE} const {$ENDIF} IID: TGUID; out Obj): HResult; override; stdcall;
   published
     { This is the Filter Editor .}
     property BaseFilter: TBaseFilter read FBaseFilter write FBaseFilter;
@@ -1182,7 +1197,7 @@ type
     constructor Create(AOwner: TComponent); override;
     destructor Destroy; override;
     {@exclude}
-    function QueryInterface(const IID: TGUID; out Obj): HResult; override; stdcall;
+    function QueryInterface({$IFDEF FPC} constref {$ELSE} const {$ENDIF} IID: TGUID; out Obj): HResult; override; stdcall;
   published
     { The filter must be connected to a TFilterGraph component.}
     property FilterGraph: TFilterGraph read FFilterGraph write SetFilterGraph;
@@ -1501,7 +1516,7 @@ type
     destructor Destroy; override;
 
     {@exclude}
-    function QueryInterface(const IID: TGUID; out Obj): HResult; override; stdcall;
+    function QueryInterface({$IFDEF FPC} constref {$ELSE} const {$ENDIF} IID: TGUID; out Obj): HResult; override; stdcall;
 
     { Clear the graphic ontop of DSVideoWindowEx. }
     procedure ClearBack;
@@ -1533,7 +1548,7 @@ type
     property Canvas;
 
     { The Colorkey is the color that the Overlay Mixer Filter used by DSVideoWindowEx sees
-      as transparent, when you draw ontop of the movie always set the canvas’s brush
+      as transparent, when you draw ontop of the movie always set the canvasâ€™s brush
       color to this color or set the style to bsclear.
       Note: The colors returned through this method vary depending on the current display mode.
       if the colors are 8-bit palettized, they will be bright system colors (such as magenta).
@@ -1602,7 +1617,7 @@ type
     property OnKeyDown;            {@exclude}
     property OnKeyPress;           {@exclude}
     property OnKeyUp;              {@exclude}
-    property OnCanResize;          {@exclude}
+ //   property OnCanResize;          {@exclude}
     property OnClick;              {@exclude}
     property OnConstrainedResize;  {@exclude}
     property OnDblClick;           {@exclude}
@@ -1711,7 +1726,11 @@ const
   constructor TFilterGraph.Create(AOwner: TComponent);
   begin
     inherited Create(AOwner);
+    {$IFDEF FPC}
+    FHandle := LCLIntf.AllocateHWnd(WndProc);
+    {$ELSE}
     FHandle := AllocateHWnd(WndProc);
+    {$ENDIF}
     FVolume := 10000;
     FBalance := 0;
     FRate  := 1.0;
@@ -1721,7 +1740,11 @@ const
   destructor TFilterGraph.Destroy;
   begin
     SetActive(False);
+    {$IFDEF FPC}
+    LCLIntf.DeallocateHWnd(FHandle);
+    {$ELSE}
     DeallocateHWnd(FHandle);
+    {$ENDIF}
     inherited Destroy;
   end;
 
@@ -1881,7 +1904,8 @@ const
       EC_ERRORABORT                : if assigned(FOnGraphErrorAbort)              then FOnGraphErrorAbort(self, Param1);
       EC_FULLSCREEN_LOST           : if assigned(FOnGraphFullscreenLost)          then FOnGraphFullscreenLost(self, IBaseFilter(Param2));
       EC_GRAPH_CHANGED             : if assigned(FOnGraphChanged)                 then FOnGraphChanged(self);
-      EC_OLE_EVENT                 : if assigned(FOnGraphOleEvent)                then FOnGraphOleEvent(self, UnicodeString(Param1), UnicodeString(Param2));
+      // 9999
+      EC_OLE_EVENT                 : if assigned(FOnGraphOleEvent)                then FOnGraphOleEvent(self, UnicodeString(PtrInt(Param1)), UnicodeString(PtrInt(Param2)));
       EC_OPENING_FILE              : if assigned(FOnGraphOpeningFile)             then FOnGraphOpeningFile(self, (Param1 = 1));
       EC_PALETTE_CHANGED           : if assigned(FOnGraphPaletteChanged)          then FOnGraphPaletteChanged(self);
       EC_PAUSED                    : if assigned(FOnGraphPaused)                  then FOnGraphPaused(self, Param1);
@@ -2001,7 +2025,7 @@ const
     end;
   end;
 
-  function TFilterGraph.QueryInterface(const IID: TGUID; out Obj): HResult;
+  function TFilterGraph.QueryInterface({$IFDEF FPC} constref {$ELSE} const {$ENDIF} IID: TGUID; out Obj): HResult;
   begin
     result := inherited QueryInterface(IID, Obj);
     if (not Succeeded(result)) and Active then
@@ -2506,8 +2530,8 @@ const
   function TFilterGraph.SelectedFilter(pMon: IMoniker): HResult; stdcall;
   var
     PropBag: IPropertyBag;
-    Name: OleVariant;
-    vGuid: OleVariant;
+    Name: {$IFDEF FPC} Variant {$ELSE} OleVariant {$ENDIF};
+    vGuid: {$IFDEF FPC} Variant {$ELSE} OleVariant {$ENDIF};
     Guid: TGUID;
   begin
     if Assigned(FOnSelectedFilter) then
@@ -2574,6 +2598,11 @@ const
     end else
       Result := E_NOINTERFACE;
   end;
+
+    procedure TFilterGraph.AddFilter(AFilter: IBaseFilter; sName : UnicodeString);
+    begin
+      FFilterGraph.AddFilter(AFilter, PWideChar(sName));
+    end;
 
 //******************************************************************************
 // TVMROptions
@@ -2904,7 +2933,7 @@ const
 
   end;
 
-  procedure TVideoWindow.ConstrainedResize(var MinWidth, MinHeight, MaxWidth, MaxHeight: Integer);
+  procedure TVideoWindow.ConstrainedResize(var MinWidth, MinHeight, MaxWidth, MaxHeight: {$IFDEF FPC} TConstraintSize {$ELSE} Integer {$ENDIF});
   begin
     inherited ConstrainedResize(MinWidth, MinHeight, MaxWidth, MaxHeight);
     Resize;
@@ -2972,7 +3001,7 @@ const
   end;
 
 
-  function TVideoWindow.QueryInterface(const IID: TGUID; out Obj): HResult;
+  function TVideoWindow.QueryInterface({$IFDEF FPC} constref {$ELSE} const {$ENDIF} IID: TGUID; out Obj): HResult;
   begin
     if IsEqualGUID(IID_IVMRWindowlessControl9, IID) and (FWindowLess <> nil) then
     begin
@@ -3373,19 +3402,24 @@ const
         BIHeaderPtr := Nil;
         if IsEqualGUID(MediaType.formattype, FORMAT_VideoInfo) then
         begin
-          if MediaType.cbFormat = SizeOf(TVideoInfoHeader) then  // check size
+          //if MediaType.cbFormat = SizeOf(TVideoInfoHeader) then  // check size
             BIHeaderPtr := @(PVideoInfoHeader(MediaType.pbFormat)^.bmiHeader);
         end
         else if IsEqualGUID(MediaType.formattype, FORMAT_VideoInfo2) then
         begin
-          if MediaType.cbFormat = SizeOf(TVideoInfoHeader2) then  // check size
+          //if MediaType.cbFormat = SizeOf(TVideoInfoHeader2) then  // check size
             BIHeaderPtr := @(PVideoInfoHeader2(MediaType.pbFormat)^.bmiHeader);
         end;
         // check, whether format is supported by TSampleGrabber
         if not Assigned(BIHeaderPtr) then
           Exit;
+        {$IFDEF FPC}
+        BitmapHandle := Windows.CreateDIBSection(0, PBitmapInfo(BIHeaderPtr)^,
+                                         DIB_RGB_COLORS, DIBPtr, 0, 0);
+        {$ELSE}
         BitmapHandle := CreateDIBSection(0, PBitmapInfo(BIHeaderPtr)^,
                                          DIB_RGB_COLORS, DIBPtr, 0, 0);
+        {$ENDIF}
         if BitmapHandle <> 0 then
         begin
           try
@@ -3437,7 +3471,7 @@ const
     Result := GetBitmap(Bitmap, Nil, 0);
   end;
 
-  function TSampleGrabber.QueryInterface(const IID: TGUID; out Obj): HResult;
+  function TSampleGrabber.QueryInterface({$IFDEF FPC} constref {$ELSE} const {$ENDIF} IID: TGUID; out Obj): HResult;
   begin
     result := inherited QueryInterface(IID, Obj);
     if failed(result) and assigned(FBaseFilter) then
@@ -3527,7 +3561,7 @@ const
         FFilterGraph := nil;
   end;
 
-  function TFilter.QueryInterface(const IID: TGUID; out Obj): HResult; 
+  function TFilter.QueryInterface({$IFDEF FPC} constref {$ELSE} const {$ENDIF} IID: TGUID; out Obj): HResult;
   begin
     result := inherited QueryInterface(IID, Obj);
     if not Succeeded(Result) then
@@ -3706,7 +3740,7 @@ const
     end;
   end;
 
-  function TASFWriter.QueryInterface(const IID: TGUID; out Obj): HResult;
+  function TASFWriter.QueryInterface({$IFDEF FPC} constref {$ELSE} const {$ENDIF} IID: TGUID; out Obj): HResult;
   begin
     result := inherited QueryInterface(IID, Obj);
     if failed(result) and assigned(FFilter) then
@@ -4791,7 +4825,7 @@ const
     end;
   end;
 
-  function TDSVideoWindowEx2.QueryInterface(const IID: TGUID; out Obj): HResult;
+  function TDSVideoWindowEx2.QueryInterface({$IFDEF FPC} constref {$ELSE} const {$ENDIF} IID: TGUID; out Obj): HResult;
   begin
     result := inherited QueryInterface(IID, Obj);
     if failed(result) and assigned(FBaseFilter) then

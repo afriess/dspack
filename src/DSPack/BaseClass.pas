@@ -106,13 +106,13 @@ type
     function IUnknown.QueryInterface = NonDelegatingQueryInterface;
     function IUnknown._AddRef = NonDelegatingAddRef;
     function IUnknown._Release = NonDelegatingRelease;
-    function QueryInterface(const IID: TGUID; out Obj): HResult; stdcall;
+    function QueryInterface( {$IFDEF FPC} constref {$ELSE} const {$ENDIF}IID: TGUID; out Obj): HResult; stdcall;
   public
     function _AddRef: Integer; stdcall;
     function _Release: Integer; stdcall;
     constructor Create(name: string; Unk: IUnknown);
     constructor CreateFromFactory(Factory: TBCClassFactory; const Controller: IUnknown); virtual;
-    function NonDelegatingQueryInterface(const IID: TGUID; out Obj): HResult; virtual; stdcall;
+    function NonDelegatingQueryInterface( {$IFDEF FPC} constref {$ELSE} const {$ENDIF}IID: TGUID; out Obj): HResult; virtual; stdcall;
     function NonDelegatingAddRef: Integer; virtual; stdcall;
     function NonDelegatingRelease: Integer; virtual; stdcall;
     function GetOwner: IUnKnown;
@@ -150,7 +150,7 @@ type
    function RegisterFilter(FilterMapper: IFilterMapper2; Register: Boolean): boolean; overload;
    procedure UpdateRegistry(Register: Boolean); overload;
   protected
-    function QueryInterface(const IID: TGUID; out Obj): HResult; stdcall;
+    function QueryInterface( {$IFDEF FPC} constref {$ELSE} const {$ENDIF}IID: TGUID; out Obj): HResult; stdcall;
     function _AddRef: Integer; stdcall;
     function _Release: Integer; stdcall;
     function CreateInstance(const UnkOuter: IUnknown; const IID: TGUID;
@@ -659,7 +659,7 @@ type
                        Lock: TBCCritSec; out hr: HRESULT; Name: UnicodeString);
     destructor Destroy; override;
     // IUnknown Methods
-    function NonDelegatingQueryInterface(const IID: TGUID; out Obj): HResult; override;
+    function NonDelegatingQueryInterface(constref IID: TGUID; out Obj): HResult; override;
     // IPin Methods
     function Disconnect: HRESULT; override; stdcall;
     // IPinFlowControl Methods
@@ -892,7 +892,7 @@ type
       out hr: HRESULT; Name: UnicodeString);
     destructor Destroy; override;
     // override to expose IMediaPosition
-    function NonDelegatingQueryInterface(const IID: TGUID; out Obj): HResult; override;
+    function NonDelegatingQueryInterface( {$IFDEF FPC} constref {$ELSE} const {$ENDIF}IID: TGUID; out Obj): HResult; override;
 
     // --- TBCBaseOutputPin ------------
 
@@ -1229,7 +1229,7 @@ type
   public
     constructor Create(Name: UnicodeString; pUnk: IUnknown; DialogID: Integer; Title: UnicodeString);
     destructor Destroy; override;
-    function NonDelegatingQueryInterface(const IID: TGUID; out Obj): HResult; override; stdcall;
+    function NonDelegatingQueryInterface( {$IFDEF FPC} constref {$ELSE} const {$ENDIF}IID: TGUID; out Obj): HResult; override; stdcall;
     function NonDelegatingAddRef: Integer; override; stdcall;
     function NonDelegatingRelease: Integer; override; stdcall;
 
@@ -2089,7 +2089,7 @@ type
 
     function GetMediaPositionInterface(IID: TGUID; out Obj): HResult;
       virtual;
-    function NonDelegatingQueryInterface(const IID: TGUID; out Obj): HResult;
+    function NonDelegatingQueryInterface( {$IFDEF FPC} constref {$ELSE} const {$ENDIF}IID: TGUID; out Obj): HResult;
       override; stdcall;
 
     function SourceThreadCanWait(CanWait: Boolean): HResult; virtual;
@@ -2424,7 +2424,7 @@ type
 
     destructor Destroy; override;
 
-    function NonDelegatingQueryInterface(const IID: TGUID; out Obj): HResult;
+    function NonDelegatingQueryInterface( {$IFDEF FPC} constref {$ELSE} const {$ENDIF}IID: TGUID; out Obj): HResult;
       override; stdcall;
 
     // IQualityControl methods - Notify allows audio-video throttling
@@ -2787,7 +2787,7 @@ type
     constructor Create(Name: String; Unk: IUnknown; out hr: HRESULT; Sched:
        TBCAMSchedule = nil);
     destructor Destroy; override; // Don't let me be created on the stack!
-    function NonDelegatingQueryInterface(const IID: TGUID; out Obj): HResult; override; stdcall;
+    function NonDelegatingQueryInterface( {$IFDEF FPC} constref {$ELSE} const {$ENDIF}IID: TGUID; out Obj): HResult; override; stdcall;
     // IReferenceClock methods
     // Derived classes must implement GetPrivateTime().  All our GetTime
     // does is call GetPrivateTime and then check so that time does not
@@ -2852,7 +2852,7 @@ type
   TBCSystemClock = class(TBCBaseReferenceClock, IAMClockAdjust, IPersist)
   public
     constructor Create(Name: UnicodeString; Unk : IUnknown; out hr : HRESULT);
-    function NonDelegatingQueryInterface(const IID: TGUID; out Obj): HResult; override; stdcall;
+    function NonDelegatingQueryInterface( {$IFDEF FPC} constref {$ELSE} const {$ENDIF}IID: TGUID; out Obj): HResult; override; stdcall;
     // Yield up our class id so that we can be persisted
     // Implement required Ipersist method
     function GetClassID(out classID: TCLSID): HResult; stdcall;
@@ -2953,7 +2953,7 @@ type
     destructor Destroy; override;
 
     (* Note the media sample does not delegate to its owner *)
-    function QueryInterface(const IID: TGUID; out Obj): HResult; stdcall;
+    function QueryInterface( {$IFDEF FPC} constref {$ELSE} const {$ENDIF}IID: TGUID; out Obj): HResult; stdcall;
     function _AddRef: Integer; stdcall;
     function _Release: Integer; stdcall;
 
@@ -3132,7 +3132,7 @@ type
 
     // override this to publicise our interfaces
     //STDMETHODIMP NonDelegatingQueryInterface(REFIID riid, void **ppv);
-    function NonDelegatingQueryInterface(const IID: TGUID; out Obj): HResult; override; stdcall;
+    function NonDelegatingQueryInterface( {$IFDEF FPC} constref {$ELSE} const {$ENDIF}IID: TGUID; out Obj): HResult; override; stdcall;
 
     (*** IMemAllocator methods ***)
     function SetProperties(
@@ -3673,7 +3673,7 @@ begin
            else InterlockedDecrement(ObjectCount);
 end;
 
-function TBCClassFactory.QueryInterface(const IID: TGUID; out Obj): HResult;
+function TBCClassFactory.QueryInterface( {$IFDEF FPC} constref {$ELSE} const {$ENDIF}IID: TGUID; out Obj): HResult;
 begin
   if GetInterface(IID, Obj) then Result := S_OK else Result := E_NOINTERFACE;
 end;
@@ -3793,7 +3793,7 @@ end;
 
 { TBCUnknown }
 
-function TBCUnknown.QueryInterface(const IID: TGUID; out Obj): HResult;
+function TBCUnknown.QueryInterface( {$IFDEF FPC} constref {$ELSE} const {$ENDIF}IID: TGUID; out Obj): HResult;
 begin
   if FOwner <> nil then
     Result := IUnknown(FOwner).QueryInterface(IID, Obj)
@@ -3815,7 +3815,7 @@ begin
     Result := NonDelegatingRelease;
 end;
 
-function TBCUnknown.NonDelegatingQueryInterface(const IID: TGUID;
+function TBCUnknown.NonDelegatingQueryInterface( {$IFDEF FPC} constref {$ELSE} const {$ENDIF}IID: TGUID;
   out Obj): HResult;
 begin
   if GetInterface(IID, Obj) then Result := S_OK else Result := E_NOINTERFACE;
@@ -4386,8 +4386,8 @@ begin
       if FPinCache.IndexOf(Pin) = -1 then
       begin
         // From the object get an IPin interface
-        TPointerDynArray(@ppPins)[Fetched] := nil;
-        TIPinDynArray(@ppPins)[Fetched] := Pin;
+        TPointerDynArray(ppPins)[Fetched] := nil;
+        TIPinDynArray(ppPins)[Fetched] := Pin;
         inc(Fetched);
         FPinCache.Add(Pin);
         dec(RealPins);
@@ -5334,7 +5334,7 @@ begin
         {   Transfer across the format block manually to save an allocate
             and free on the format block and generally go faster }
 
-        TMTDynArray(@ppMediaTypes)[Fetched] := CoTaskMemAlloc(sizeof(TAMMediaType));
+        TMTDynArray(ppMediaTypes)[Fetched] := CoTaskMemAlloc(sizeof(TAMMediaType));
         if TMTDynArray(@ppMediaTypes)[Fetched] = nil then Break;
 
         {  Do a regular copy }
@@ -6090,7 +6090,7 @@ begin
   inherited Destroy;
 end;
 
-function TBCDynamicOutputPin.NonDelegatingQueryInterface(const IID: TGUID; out Obj): HResult;
+function TBCDynamicOutputPin.NonDelegatingQueryInterface( {$IFDEF FPC} constref {$ELSE} const {$ENDIF}IID: TGUID; out Obj): HResult;
 begin
   if IsEqualGUID(IID,IID_IPinFlowControl) then
   begin
@@ -7585,7 +7585,7 @@ begin
 end;
 
 function TBCTransformOutputPin.NonDelegatingQueryInterface(
-  const IID: TGUID; out Obj): HResult;
+  {$IFDEF FPC} constref {$ELSE} const {$ENDIF} IID: TGUID; out Obj): HResult;
 begin
   if IsEqualGUID(iid, IID_IMediaPosition) or IsEqualGUID(iid, IID_IMediaSeeking) then
     begin
@@ -9132,7 +9132,7 @@ begin
     {$IFDEF FPC}
     // martin begin
     result := ti.Invoke(Pointer(Integer(Self)), DISPID, Flags, TDispParams(Params),
-      Variant(VarResult^), ActiveX.EXCEPINFO(ExcepInfo^), UINT(ArgErr^));
+      pVariant(VarResult^), pExcepInfo(ExcepInfo^), PUINT(ArgErr^)); // 9999 for CodeTyphon
     // martin end
     {$ELSE}
     result := ti.Invoke(Pointer(Integer(Self)), DISPID, Flags, TDispParams(Params),
@@ -9187,7 +9187,7 @@ begin
   {$IFDEF FPC}
   // martin begin
   result := ti.Invoke(Pointer(Integer(Self)), DISPID, Flags, TDispParams(Params),
-    Variant(VarResult^), ActiveX.EXCEPINFO(ExcepInfo^), UINT(ArgErr^));
+    pVariant(VarResult^), pExcepInfo(ExcepInfo^), pUINT(ArgErr^)); // 9999 for CodeTyphon
   // martin end
   {$ELSE}
   result := ti.Invoke(Pointer(Integer(Self)), DISPID, Flags,
@@ -9249,7 +9249,7 @@ begin
   {$IFDEF FPC}
   // martin begin
   result := ti.Invoke(Pointer(Integer(Self)), DISPID, Flags, TDispParams(Params),
-    Variant(VarResult^), ActiveX.EXCEPINFO(ExcepInfo^), UINT(ArgErr^));
+    pVariant(VarResult^), pExcepInfo(ExcepInfo^), pUINT(ArgErr^)); // 9999 for CodeTyphon
   // martin end
   {$ELSE}
   result := ti.Invoke(Pointer(Integer(Self)), DISPID, Flags,
@@ -11672,7 +11672,7 @@ end;
 
 // Overriden to say what interfaces we support and where
 
-function TBCBaseRenderer.NonDelegatingQueryInterface(const IID: TGUID;
+function TBCBaseRenderer.NonDelegatingQueryInterface( {$IFDEF FPC} constref {$ELSE} const {$ENDIF}IID: TGUID;
   out Obj): HResult;
 begin
 // Milenko start (removed unnessacery code)
@@ -14879,7 +14879,7 @@ end;
 
 // Overidden to return our IQualProp interface
 
-function TBCBaseVideoRenderer.NonDelegatingQueryInterface(const IID: TGUID;
+function TBCBaseVideoRenderer.NonDelegatingQueryInterface( {$IFDEF FPC} constref {$ELSE} const {$ENDIF}IID: TGUID;
   out Obj): HResult;
 begin
   // We return IQualProp and delegate everything else
@@ -15991,7 +15991,7 @@ begin
   Result := NOERROR;
 end;
 
-function TBCBaseReferenceClock.NonDelegatingQueryInterface(const IID: TGUID;
+function TBCBaseReferenceClock.NonDelegatingQueryInterface( {$IFDEF FPC} constref {$ELSE} const {$ENDIF}IID: TGUID;
   out Obj): HResult; stdcall;
 begin
   if (IsEqualGUID(IID,IID_IReferenceClock)) then
@@ -16190,7 +16190,7 @@ begin
   inherited Create(Name,Unk,hr);
 end;
 
-function TBCSystemClock.NonDelegatingQueryInterface(const IID: TGUID; out Obj): HResult;
+function TBCSystemClock.NonDelegatingQueryInterface( {$IFDEF FPC} constref {$ELSE} const {$ENDIF}IID: TGUID; out Obj): HResult;
 begin
   if IsEqualGUID(IID,IID_IPersist) then
   begin
@@ -16289,7 +16289,7 @@ begin
   Result := lRef;
 end;
 
-function TBCMediaSample.QueryInterface(const IID: TGUID; out Obj): HResult;
+function TBCMediaSample.QueryInterface( {$IFDEF FPC} constref {$ELSE} const {$ENDIF}IID: TGUID; out Obj): HResult;
 begin
   if (IsEqualIID(IID, IID_IMediaSample) or IsEqualIID(IID, IID_IMediaSample2) or
       IsEqualIID(IID, IID_IUnknown)) and GetInterface(IID_IMediaSample2, Obj)
@@ -17176,7 +17176,7 @@ begin
 end;
 
 (* Override this to publicise our interfaces *)
-function TBCBaseAllocator.NonDelegatingQueryInterface(const IID: TGUID;
+function TBCBaseAllocator.NonDelegatingQueryInterface( {$IFDEF FPC} constref {$ELSE} const {$ENDIF}IID: TGUID;
   out Obj): HResult;
 begin
   (* Do we know about this interface *)
@@ -17714,7 +17714,7 @@ begin
   end;
 end;
 
-function TBCBasePropertyPage.NonDelegatingQueryInterface(const IID: TGUID; out Obj): HResult;
+function TBCBasePropertyPage.NonDelegatingQueryInterface( {$IFDEF FPC} constref {$ELSE} const {$ENDIF}IID: TGUID; out Obj): HResult;
 begin
   if IsEqualGUID(IID, IPropertyPage) then
   begin
