@@ -8,6 +8,9 @@
 
 ### changes ###
 
+30. May 2017
+-changes reorganisation for Lazarus support 
+
 23. May 2005 * several Shoutcast Changes *
 -added ripper functions
 -added directly use of AsyncEx witout a need to register the Filter
