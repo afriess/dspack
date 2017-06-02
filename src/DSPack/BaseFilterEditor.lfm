@@ -9,6 +9,7 @@ object FormBaseFilter: TFormBaseFilter
   ClientHeight = 326
   ClientWidth = 411
   Color = clBtnFace
+  DesignTimePPI = 120
   Font.Color = clWindowText
   Font.Height = -11
   Font.Name = 'MS Sans Serif'
