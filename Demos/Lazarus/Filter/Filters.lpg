@@ -1,22 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CONFIG>
   <ProjectGroup FileVersion="1">
-    <Targets Count="3">
-      <Target0 FileName="01_FilterEnumerator\FilterEnum.lpi">
+    <Targets Count="4">
+      <Target0 FileName="..\10Basics\01EnumerationCategories\BasicEnumCat.lpi">
+        <BuildModes Count="1"/>
+        <Mode1 Name="Default"/>
+      </Target0>
+      <Target1 FileName="01FilterEnumerator\FilterEnum.lpi">
         <BuildModes Count="2"/>
         <Mode1 Name="Debug"/>
         <Mode2 Name="Release"/>
-      </Target0>
-      <Target1 FileName="..\VMRBitmap\VMRBitmap.lpi">
-        <BuildModes Count="2"/>
-        <Mode1 Name="Debug" Compile="True"/>
-        <Mode2 Name="Release"/>
       </Target1>
-      <Target2 FileName="02_WebCam\WebCam.lpi">
+      <Target2 FileName="..\VMRBitmap\VMRBitmap.lpi">
         <BuildModes Count="2"/>
         <Mode1 Name="Debug" Compile="True"/>
         <Mode2 Name="Release"/>
       </Target2>
+      <Target3 FileName="02WebCam\WebCam.lpi">
+        <BuildModes Count="2"/>
+        <Mode1 Name="Debug" Compile="True"/>
+        <Mode2 Name="Release"/>
+      </Target3>
     </Targets>
   </ProjectGroup>
 </CONFIG>
